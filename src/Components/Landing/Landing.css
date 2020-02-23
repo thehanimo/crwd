@@ -1,0 +1,55 @@
+.bg {
+  /* background-image: url(../../images/mountains.jpg); */
+  background: linear-gradient(145deg, #fff, #e5e7e8);
+  background-size: cover;
+  height: 100vh;
+}
+
+.shadow {
+  background-color: white;
+  box-shadow: 0 0 15px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+}
+.transition {
+  transition: 0.3s;
+  height: auto;
+  max-height: 500px;
+}
+.small-logo {
+  height: 30px;
+  width: 30px;
+}
+
+.google-round {
+  height: 50px;
+  width: 50px;
+  padding: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+  border-radius: 30px;
+  background: linear-gradient(145deg, #fff, #e5e7e8);
+  transition: 0.3s;
+}
+
+.google-round:hover {
+  box-shadow: 0 2px 5px 0px rgba(0, 0, 0, 0.15);
+  margin-top: -5px;
+  margin-bottom: 5px;
+}
+
+.linkedin-round {
+  height: 50px;
+  width: 50px;
+  margin-left: 20px;
+  margin-right: 20px;
+  padding: 10px;
+  border-radius: 30px;
+  background: linear-gradient(145deg, #89cfef, #1e9ad6);
+  transition: 0.3s;
+}
+
+.linkedin-round:hover {
+  box-shadow: 0 2px 5px 0px rgba(0, 0, 0, 0.15);
+  margin-top: -5px;
+  margin-bottom: 5px;
+}

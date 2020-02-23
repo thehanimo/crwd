@@ -1,0 +1,20 @@
+.navItem > a {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  line-height: 40px;
+}
+.navItem {
+  transition: 0.3s;
+}
+.navItem:hover {
+  background-color: #f5f5f5;
+}
+
+.navItem > a:hover {
+  color: black;
+}
+
+.navBar {
+  border-bottom: 1px solid #dadadd;
+}
