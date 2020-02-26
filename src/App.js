@@ -8,20 +8,29 @@ import {
   useHistory,
   useLocation
 } from "react-router-dom";
+import { LinkedInPopUp } from "react-linkedin-login-oauth2";
+
 import "./App.css";
 import Home from "./Components/Home/Home";
-import Landing from "./Components/Landing/Landing";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "shards-ui/dist/css/shards.min.css";
 import NavBar from "./Components/NavBar/NavBar";
+import Login from "./Components/Login/Login";
+import Cookie from "js-cookie";
 
-export default function App() {
-  return (
-    <Router>
-      <div>
-        <NavBar />
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
 
-        {/* <ul>
+  render() {
+    return (
+      <Router>
+        <div>
+          <NavBar />
+
+          {/* <ul>
           <li>
             <Link to="/home">Public Page</Link>
           </li>
@@ -30,24 +39,35 @@ export default function App() {
           </li>
         </ul> */}
 
-        <Switch>
-          <Route path="/landing">
-            <Landing />
-          </Route>
-          <Route path="/home">
-            <Home />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
-  );
+          <Switch>
+            <Route exact path="/">
+              <Redirect
+                to={{
+                  pathname: "/login"
+                }}
+              />
+            </Route>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <PrivateRoute path="/home">
+              <Home />
+            </PrivateRoute>
+            <Route exact path="/linkedin" component={LinkedInPopUp} />
+          </Switch>
+        </div>
+      </Router>
+    );
+  }
 }
+
 function PrivateRoute({ children, ...rest }) {
+  const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        false ? (
+        JWT != "null" ? (
           children
         ) : (
           <Redirect
