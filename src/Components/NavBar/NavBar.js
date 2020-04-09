@@ -10,10 +10,26 @@ export default class NavBar extends React.Component {
     return (
       <div className="container-fluid navBar">
         <Nav style={{ justifyContent: "flex-end" }}>
-          {/* <div style={{ height: "60px", width: 100, backgroundColor: "red" }} /> */}
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              justifyContent: "flex-start",
+            }}
+          >
+            <img
+              src={require("../../images/crwd-logo-final.png")}
+              style={{ height: 60 }}
+            />
+          </div>
           <NavItem className="navItem">
             <NavLink active href="/home">
               Home
+            </NavLink>
+          </NavItem>
+          <NavItem className="navItem">
+            <NavLink active href="/books">
+              Books
             </NavLink>
           </NavItem>
           {JWT != "null" ? (

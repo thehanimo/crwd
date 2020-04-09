@@ -6,7 +6,7 @@ import {
   Link,
   Redirect,
   useHistory,
-  useLocation
+  useLocation,
 } from "react-router-dom";
 import { LinkedInPopUp } from "react-linkedin-login-oauth2";
 
@@ -17,6 +17,8 @@ import "shards-ui/dist/css/shards.min.css";
 import NavBar from "./Components/NavBar/NavBar";
 import Login from "./Components/Login/Login";
 import Cookie from "js-cookie";
+import Books from "./Components/Books/Books";
+import Book from "./Components/Books/Book/Book";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -43,13 +45,19 @@ export default class App extends React.Component {
             <Route exact path="/">
               <Redirect
                 to={{
-                  pathname: "/login"
+                  pathname: "/login",
                 }}
               />
             </Route>
             <Route path="/login">
               <Login />
             </Route>
+            <PrivateRoute exact path="/books">
+              <Books />
+            </PrivateRoute>
+            <PrivateRoute path="/books/:id">
+              <Book />
+            </PrivateRoute>
             <PrivateRoute path="/home">
               <Home />
             </PrivateRoute>
@@ -73,7 +81,7 @@ function PrivateRoute({ children, ...rest }) {
           <Redirect
             to={{
               pathname: "/login",
-              state: { from: location }
+              state: { from: location },
             }}
           />
         )

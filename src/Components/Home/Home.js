@@ -12,13 +12,13 @@ export default class Home extends React.Component {
     fetch(backendAPI + "/users", {
       method: "GET",
       headers: {
-        Authorization: JWT
-      }
-    }).then(res => {
+        Authorization: JWT,
+      },
+    }).then((res) => {
       if (res.status === 401) {
         this.setState({ error: true });
       } else
-        res.json().then(resJson => {
+        res.json().then((resJson) => {
           this.setState({ email: resJson.email, picture: resJson.picture });
         });
     });
