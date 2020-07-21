@@ -6,7 +6,7 @@ import {
   NavLink,
   Form,
   FormInput,
-  FormGroup
+  FormGroup,
 } from "shards-react";
 import GoogleLogin from "react-google-login";
 import { LinkedIn } from "react-linkedin-login-oauth2";
@@ -22,72 +22,72 @@ const UBox = posed.div({
   exit: {
     marginLeft: -16,
     marginRight: 16,
-    opacity: 0
+    opacity: 0,
   },
   enter: {
     marginLeft: 0,
     marginRight: 0,
-    opacity: 1
-  }
+    opacity: 1,
+  },
 });
 
 const PBox = posed.div({
   exit: {
     marginLeft: 16,
     marginRight: -16,
-    opacity: 0
+    opacity: 0,
   },
   enter: {
     marginLeft: 0,
     marginRight: 0,
-    opacity: 1
-  }
+    opacity: 1,
+  },
 });
 
 const Box = posed.div({
   exit: {
-    opacity: 0
+    opacity: 0,
   },
   enter: {
-    opacity: 1
-  }
+    opacity: 1,
+  },
 });
 
-const responseGoogle = response => {
+const responseGoogle = (response) => {
   fetch(backendAPI + "/auth/google", {
     method: "POST",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ tokenId: response.tokenId })
+    body: JSON.stringify({ tokenId: response.tokenId }),
   })
-    .then(res => res.json())
-    .then(resJson => {
+    .then((res) => res.json())
+    .then((resJson) => {
       console.log(resJson.JWT);
       Cookie.set("JWT", resJson.JWT);
       window.location.replace("/home");
     });
 };
 
-const responseLinkedInSuccess = response => {
+const responseLinkedInSuccess = (response) => {
   fetch(backendAPI + "/auth/linkedin", {
     method: "POST",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(response)
+    body: JSON.stringify(response),
   })
-    .then(res => res.json())
-    .then(resJson => {
+    .then((res) => res.json())
+    .then((resJson) => {
       console.log(resJson.JWT);
       Cookie.set("JWT", resJson.JWT);
       window.location.replace("/home");
     });
 };
 
-const responseLinkedInFailure = response => {
+const responseLinkedInFailure = (response) => {
   console.log(response);
 };
 
@@ -98,7 +98,7 @@ export default class Login extends React.Component {
       showUsername: true,
       showPassword: false,
       showLogin: true,
-      showSignup: false
+      showSignup: false,
     };
   }
   render() {
@@ -115,14 +115,14 @@ export default class Login extends React.Component {
               style={{
                 marginTop: 60,
                 transition: "0.3s",
-                height: this.state.showLogin ? 370 : 516
+                height: this.state.showLogin ? 370 : 516,
               }}
             >
               <div
                 style={{
                   marginTop: 30,
                   marginBottom: 16,
-                  paddingBottom: 20
+                  paddingBottom: 20,
                 }}
               >
                 <PoseGroup>
@@ -148,7 +148,7 @@ export default class Login extends React.Component {
                             this.setState({
                               showLogin: true,
                               showPassword: false,
-                              showUsername: true
+                              showUsername: true,
                             });
                           }, 300);
                         }}
@@ -170,7 +170,7 @@ class LoginForm extends React.Component {
     super(props);
     this.state = {
       showUsername: true,
-      showPassword: false
+      showPassword: false,
     };
   }
   render() {
@@ -185,14 +185,14 @@ class LoginForm extends React.Component {
               <UBox key="usernameForm">
                 <UsernameForm
                   username={this.state.username}
-                  onSuccess={username => {
+                  onSuccess={(username) => {
                     this.setState({
                       showUsername: false,
-                      username
+                      username,
                     });
                     setTimeout(() => {
                       this.setState({
-                        showPassword: true
+                        showPassword: true,
                       });
                     }, 300);
                   }}
@@ -205,11 +205,11 @@ class LoginForm extends React.Component {
                   username={this.state.username}
                   onBack={() => {
                     this.setState({
-                      showPassword: false
+                      showPassword: false,
                     });
                     setTimeout(() => {
                       this.setState({
-                        showUsername: true
+                        showUsername: true,
                       });
                     }, 300);
                   }}
@@ -248,12 +248,12 @@ class OAuthButtons extends React.Component {
         <div
           className="row"
           style={{
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <GoogleLogin
             clientId="40651276287-8bgrmsj533aa383aefdebcdk1ad423oh.apps.googleusercontent.com"
-            render={renderProps => (
+            render={(renderProps) => (
               <div className="google-round" onClick={renderProps.onClick}>
                 <img src={GoogleLogo} className="small-logo" />
               </div>
@@ -286,7 +286,7 @@ class UsernameForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: ""
+      username: "",
     };
   }
 
@@ -294,15 +294,15 @@ class UsernameForm extends React.Component {
     if (this.props.username) this.onUsernameChange(this.props.username);
   };
 
-  onUsernameChange = text => {
-    if (text.length > 3 && /^[a-zA-Z]+$/.test(text)) {
+  onUsernameChange = (text) => {
+    if (text.length > 3 && /^[a-zA-Z0-9]+$/.test(text)) {
       fetch(backendAPI + `/users/username?username=${text}`)
-        .then(res => res.json())
-        .then(resJson => {
+        .then((res) => res.json())
+        .then((resJson) => {
           this.setState({
             usernameValid: !resJson.isAvailable,
             username: text,
-            error: false
+            error: false,
           });
         });
     } else {
@@ -319,7 +319,7 @@ class UsernameForm extends React.Component {
               ref="username"
               id="#username"
               placeholder="Username"
-              onChange={e => this.onUsernameChange(e.target.value)}
+              onChange={(e) => this.onUsernameChange(e.target.value)}
               usernameValid={this.state.usernameValid}
               value={this.state.username}
               invalid={this.state.error}
@@ -346,7 +346,7 @@ class PasswordForm extends React.Component {
     this.state = {};
   }
 
-  onPasswordChange = text => this.setState({ password: text, error: false });
+  onPasswordChange = (text) => this.setState({ password: text, error: false });
 
   onSubmit = () => {
     const { password } = this.state;
@@ -354,14 +354,14 @@ class PasswordForm extends React.Component {
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username: this.props.username, password })
-    }).then(res => {
+      body: JSON.stringify({ username: this.props.username, password }),
+    }).then((res) => {
       if (res.status === 401) {
         this.setState({ error: true });
       } else
-        res.json().then(resJson => {
+        res.json().then((resJson) => {
           console.log(resJson);
           Cookie.set("JWT", resJson.JWT);
           window.location.replace("/home");
@@ -377,7 +377,7 @@ class PasswordForm extends React.Component {
               type="password"
               id="#password"
               placeholder="Password"
-              onChange={e => this.onPasswordChange(e.target.value)}
+              onChange={(e) => this.onPasswordChange(e.target.value)}
               invalid={this.state.error}
             />
           </FormGroup>
@@ -402,18 +402,18 @@ class SignUpForm extends React.Component {
     super(props);
     this.state = {
       username: "",
-      usernameValid: null
+      usernameValid: null,
     };
   }
-  onUsernameChange = text => {
-    if (text.length > 3 && /^[a-zA-Z]+$/.test(text)) {
+  onUsernameChange = (text) => {
+    if (text.length > 3 && /^[a-zA-Z0-9]+$/.test(text)) {
       fetch(backendAPI + `/users/username?username=${text}`)
-        .then(res => res.json())
-        .then(resJson => {
+        .then((res) => res.json())
+        .then((resJson) => {
           this.setState({
             usernameValid: resJson.isAvailable,
             username: text,
-            uerror: false
+            uerror: false,
           });
         });
     } else {
@@ -421,57 +421,57 @@ class SignUpForm extends React.Component {
     }
   };
 
-  onEmailChange = text => {
+  onEmailChange = (text) => {
     if (
       /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/.test(text)
     ) {
       fetch(backendAPI + `/users/email?email=${text}`)
-        .then(res => res.json())
-        .then(resJson => {
+        .then((res) => res.json())
+        .then((resJson) => {
           this.setState({
             email: text,
             emailValid: resJson.isAvailable,
-            eerror: false
+            eerror: false,
           });
         });
     } else {
       this.setState({
         email: text,
         emailValid: false,
-        eerror: false
+        eerror: false,
       });
     }
   };
 
-  onPasswordChange = text => {
+  onPasswordChange = (text) => {
     if (text.length > 5) {
       this.setState({
         password: text,
         passwordValid: true,
         confirmPasswordValid: text === this.state.confirmPassword,
-        perror: false
+        perror: false,
       });
     } else
       this.setState({
         password: text,
         passwordValid: false,
         confirmPasswordValid: false,
-        perror: false
+        perror: false,
       });
   };
 
-  onConfirmPassword = text => {
+  onConfirmPassword = (text) => {
     if (text.length > 5 && text === this.state.password) {
       this.setState({
         confirmPassword: text,
         confirmPasswordValid: true,
-        cperror: false
+        cperror: false,
       });
     } else
       this.setState({
         confirmPassword: text,
         confirmPasswordValid: false,
-        cperror: false
+        cperror: false,
       });
   };
 
@@ -480,7 +480,7 @@ class SignUpForm extends React.Component {
       usernameValid,
       emailValid,
       passwordValid,
-      confirmPasswordValid
+      confirmPasswordValid,
     } = this.state;
     if (usernameValid && emailValid && passwordValid && confirmPasswordValid) {
       const { username, email, password } = this.state;
@@ -488,10 +488,10 @@ class SignUpForm extends React.Component {
         method: "POST",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, email, password })
-      }).then(res => {
+        body: JSON.stringify({ username, email, password }),
+      }).then((res) => {
         if (res.status === 401) {
           this.setState({ error: true });
         } else this.setState({ verify: true });
@@ -501,7 +501,7 @@ class SignUpForm extends React.Component {
         uerror: !usernameValid,
         eerror: !emailValid,
         perror: !passwordValid,
-        cperror: !confirmPasswordValid
+        cperror: !confirmPasswordValid,
       });
     }
   };
@@ -530,7 +530,7 @@ class SignUpForm extends React.Component {
               <FormInput
                 id="#username"
                 placeholder="Username"
-                onChange={e => this.onUsernameChange(e.target.value)}
+                onChange={(e) => this.onUsernameChange(e.target.value)}
                 valid={this.state.usernameValid}
                 invalid={this.state.uerror && !this.state.usernameValid}
               />
@@ -539,7 +539,7 @@ class SignUpForm extends React.Component {
               <FormInput
                 id="#email"
                 placeholder="Email"
-                onChange={e => this.onEmailChange(e.target.value)}
+                onChange={(e) => this.onEmailChange(e.target.value)}
                 valid={this.state.emailValid}
                 invalid={this.state.eerror && !this.state.emailValid}
               />
@@ -549,7 +549,7 @@ class SignUpForm extends React.Component {
                 type="password"
                 id="#password"
                 placeholder="Password"
-                onChange={e => this.onPasswordChange(e.target.value)}
+                onChange={(e) => this.onPasswordChange(e.target.value)}
                 valid={this.state.passwordValid}
                 invalid={this.state.perror && !this.state.passwordValid}
               />
@@ -559,7 +559,7 @@ class SignUpForm extends React.Component {
                 type="password"
                 id="#confirmPassword"
                 placeholder="Confirm Password"
-                onChange={e => this.onConfirmPassword(e.target.value)}
+                onChange={(e) => this.onConfirmPassword(e.target.value)}
                 valid={this.state.confirmPasswordValid}
                 invalid={this.state.cperror && !this.state.confirmPasswordValid}
               />

@@ -62,16 +62,12 @@ export default class Books extends React.Component {
         Authorization: JWT,
       },
     }).then((res) => {
-      console.log(res);
-      if (res.status === 401) {
-        this.setState({ error: true });
-      } else
-        res.json().then((resJson) => {
-          this.setState({
-            books: this.state.books.concat(resJson),
-            nextPage: this.state.nextPage + 1,
-          });
+      res.json().then((resJson) => {
+        this.setState({
+          books: this.state.books.concat(resJson),
+          nextPage: this.state.nextPage + 1,
         });
+      });
     });
   };
   render() {
@@ -86,7 +82,7 @@ export default class Books extends React.Component {
             </Col>
           </Row>
           <InfiniteScroll
-            dataLength={this.state.totalPages} //This is important field to render the next data
+            dataLength={this.state.nextPage} //This is important field to render the next data
             next={this.fetchData}
             hasMore={this.state.nextPage <= this.state.totalPages}
             loader={
@@ -130,16 +126,20 @@ export default class Books extends React.Component {
                     </div>
                     <CardImg
                       src={item.picture}
-                      style={{ width: 300, minHeight: 300 }}
+                      style={{ width: 300, minHeight: 186 * 2 }}
                     />
                     <CardBody>
                       <CardTitle>{item.title}</CardTitle>
                       <p>By {item.author}</p>
-                      <ReactStarsRating
-                        onChange={() => {}}
-                        value={4}
-                        isEdit={false}
-                      />
+                      {item.rating == 0 ? (
+                        <p style={{ color: "#333" }}>No Ratings yet</p>
+                      ) : (
+                        <ReactStarsRating
+                          onChange={() => {}}
+                          value={item.rating}
+                          isEdit={false}
+                        />
+                      )}{" "}
                     </CardBody>
                     <CardFooter>
                       <div

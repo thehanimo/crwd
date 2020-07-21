@@ -15,6 +15,7 @@ import {
   FormTextarea,
   Alert,
 } from "shards-react";
+import Moment from "react-moment";
 
 import { useParams } from "react-router-dom";
 import ReactStarsRating from "react-awesome-stars-rating";
@@ -29,55 +30,108 @@ export default function Book() {
   const [error, setError] = useState(false);
   const [username, setUsername] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [selfReview, setSelfReview] = useState(null);
+  const [isSelfReviewChanged, setIsSelfReviewChanged] = useState(false);
   const { id } = useParams();
   const reviewTextArea = useRef(null);
+  const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
 
-  useEffect(() => {
-    const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
-    fetch(booksAPI + "?id=" + id, {
+  useEffect(async () => {
+    let username, reviews, res, resJson;
+    res = await fetch(booksAPI + "?id=" + id, {
       method: "GET",
       headers: {
         Authorization: JWT,
       },
-    }).then((res) => {
-      console.log(res);
-      if (res.status === 401) {
-        setError(true);
-      } else
-        res.json().then((resJson) => {
-          setBookData(resJson[0]);
-        });
     });
+    if (res.status === 401) {
+      setError(true);
+    } else {
+      resJson = await res.json();
+      setBookData(resJson);
+      setReviews(resJson.bookinfo.reviews);
+      reviews = resJson.bookinfo.reviews;
+    }
 
-    fetch(backendAPI + "/users", {
+    res = await fetch(backendAPI + "/users", {
       method: "GET",
       headers: {
         Authorization: JWT,
       },
-    }).then((res) => {
-      if (res.status === 401) {
-        setError(true);
-      } else
-        res.json().then((resJson) => {
-          setUsername(resJson.username);
-        });
     });
+    if (res.status === 401) {
+      setError(true);
+    } else {
+      resJson = await res.json();
+      setUsername(resJson.username);
+      username = resJson.username;
+    }
+
+    console.log(reviews, username);
+
+    for (let i = 0; i < reviews.length; i++) {
+      if (reviews[i].username === username) {
+        setSelfReview(reviews[i]);
+        setRating(reviews[i].rating);
+        reviewTextArea.current.value = reviews[i].review;
+        break;
+      }
+    }
   }, []);
 
   const submitReview = () => {
-    let body = reviewTextArea.current.value.trim();
-    if (body === "") return;
+    let review = reviewTextArea.current.value.trim();
+    if (rating == 0) return;
     setIsSubmitting(true);
     // fetch
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setShowSuccessAlert(true);
-      setRating(0);
-      reviewTextArea.current.value = "";
-      setTimeout(() => {
-        setShowSuccessAlert(false);
-      }, 2000);
-    }, 3000);
+    fetch(booksAPI + `/${id}/review`, {
+      method: "POST",
+      headers: {
+        Authorization: JWT,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        rating,
+        review,
+      }),
+    }).then((res) => {
+      if (res.status === 401) {
+        setError(true);
+      } else {
+        setIsSubmitting(false);
+        setShowSuccessAlert(true);
+        setRating(0);
+        reviewTextArea.current.value = "";
+        updateReviews();
+        setTimeout(() => {
+          setShowSuccessAlert(false);
+        }, 2000);
+      }
+    });
+  };
+
+  const updateReviews = () => {
+    fetch(booksAPI + `/${id}/reviews`, {
+      method: "GET",
+    }).then((res) => {
+      if (res.status === 500) {
+        setError(true);
+      } else
+        res.json().then((reviews) => {
+          setReviews(reviews);
+          for (let i = 0; i < reviews.length; i++) {
+            if (reviews[i].username === username) {
+              setSelfReview(reviews[i]);
+              setRating(reviews[i].rating);
+              setIsSelfReviewChanged(false);
+              reviewTextArea.current.value = reviews[i].review;
+              break;
+            }
+          }
+        });
+    });
   };
 
   return (
@@ -106,8 +160,7 @@ export default function Book() {
             <div>By {bookData.author}</div>
             <div style={{ marginTop: 5 }}>
               <ReactStarsRating
-                onChange={() => {}}
-                value={1}
+                value={bookData.rating}
                 isEdit={false}
                 size={20}
               />
@@ -124,7 +177,7 @@ export default function Book() {
                 size={16}
                 style={{ marginRight: 4, marginBottom: 3 }}
               />
-              {bookData.pub_date && bookData.pub_date.split("T")[0]}
+              <Moment format="DD MMM 'YY">{bookData.pub_date}</Moment>
             </div>
           </Col>
         </Row>
@@ -176,7 +229,7 @@ export default function Book() {
             }}
           >
             <h3 className="bebas" style={{ marginTop: 20, fontSize: 32 }}>
-              Share your review.
+              {selfReview ? "Your Review" : "Share your review"}
             </h3>
           </Col>
         </Row>
@@ -198,7 +251,7 @@ export default function Book() {
                 </h5>
                 <ReactStarsRating
                   onChange={(rating) => {
-                    this.setState({ rating });
+                    setRating(rating);
                   }}
                   value={rating}
                   size={20}
@@ -208,9 +261,27 @@ export default function Book() {
                   style={{ marginTop: 20, marginBottom: 20 }}
                   placeholder="Write a review"
                   disabled={isSubmitting}
+                  onChange={(text) => {
+                    if (selfReview) {
+                      if (
+                        selfReview.review == reviewTextArea.current.value.trim()
+                      )
+                        setIsSelfReviewChanged(false);
+                      else setIsSelfReviewChanged(true);
+                    }
+                  }}
                 />
                 {!isSubmitting ? (
-                  <Button onClick={submitReview}>Submit</Button>
+                  <Button
+                    onClick={submitReview}
+                    disabled={
+                      selfReview
+                        ? selfReview.rating == rating && !isSelfReviewChanged
+                        : rating === 0
+                    }
+                  >
+                    {selfReview ? "Edit" : "Submit"}
+                  </Button>
                 ) : (
                   <div>
                     <Loader type="line-scale" active color="#333" />
@@ -221,79 +292,70 @@ export default function Book() {
           </Col>
         </Row>
 
-        <Row>
-          <Col
-            style={{
-              alignItems: "center",
-              display: "flex",
-              flex: 1,
-              marginTop: 30,
-            }}
-          >
-            <h3 className="bebas" style={{ marginTop: 20, fontSize: 32 }}>
-              Here's what others have to say
-            </h3>
-          </Col>
-        </Row>
-
-        {["1", "2", "3", "4", "5", "1", "2", "3", "4", "5"].map(
-          (item, index) => (
-            <Row>
-              <Col>
-                <Card
-                  style={{
-                    maxWidth: "100%",
-                    borderRadius: 5,
-                    padding: 0,
-                    overflow: "hidden",
-                  }}
-                  className="growOnHover"
-                >
-                  <CardBody onClick={() => reviewTextArea.current.focus()}>
-                    <h5
-                      className="bebas"
-                      style={{ marginBottom: 5, fontSize: 24 }}
-                    >
-                      User{item}
-                    </h5>
-                    <ReactStarsRating
-                      onChange={() => {}}
-                      value={1}
-                      isEdit={false}
-                      size={20}
-                    />
-                    <div style={{ marginTop: 10 }}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                      ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                      Duis aute irure dolor in reprehenderit in voluptate velit
-                      esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                      sint occaecat cupidatat non proident, sunt in culpa qui
-                      officia deserunt mollit anim id est laborum.
-                    </div>
-                  </CardBody>
-                  <CardFooter>
-                    <div
-                      style={{
-                        justifyContent: "center",
-                        alignItems: "center",
-                        fontSize: 12,
-                      }}
-                    >
-                      <Clock
-                        color="#888"
-                        size={12}
-                        style={{ marginRight: 4, marginBottom: 3 }}
-                      />
-                      12 Jan 20'
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Col>
-            </Row>
-          )
+        {reviews.length !== 0 && (
+          <Row>
+            <Col
+              style={{
+                alignItems: "center",
+                display: "flex",
+                flex: 1,
+                marginTop: 30,
+              }}
+            >
+              <h3 className="bebas" style={{ marginTop: 20, fontSize: 32 }}>
+                Here's what others have to say
+              </h3>
+            </Col>
+          </Row>
         )}
+
+        {reviews.map((item, index) => (
+          <Row>
+            <Col>
+              <Card
+                style={{
+                  maxWidth: "100%",
+                  borderRadius: 5,
+                  padding: 0,
+                  overflow: "hidden",
+                  margin: 30,
+                }}
+              >
+                <CardBody>
+                  <h5
+                    className="bebas"
+                    style={{ marginBottom: 5, fontSize: 24 }}
+                  >
+                    {item.username}
+                  </h5>
+                  <ReactStarsRating
+                    onChange={() => {}}
+                    value={item.rating}
+                    isEdit={false}
+                    size={20}
+                  />
+                  <div style={{ marginTop: 10 }}>{item.review}</div>
+                </CardBody>
+                <CardFooter>
+                  <div
+                    style={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      fontSize: 12,
+                    }}
+                  >
+                    <Clock
+                      color="#888"
+                      size={12}
+                      style={{ marginRight: 4, marginBottom: 3 }}
+                    />
+                    <Moment fromNow>{item.date_written}</Moment>
+                  </div>
+                </CardFooter>
+              </Card>
+            </Col>
+          </Row>
+        ))}
       </Container>
     </React.Fragment>
   );
