@@ -59,10 +59,9 @@ export default class Playlists extends React.Component {
         this.setState({ error: true });
       } else
         res.json().then((resJson) => {
-          console.log(resJson);
           this.setState({
             playlists: resJson,
-            totalPages: resJson[0].totalpages,
+            totalPages: resJson.length === 0 ? 0 : resJson[0].totalpages,
             nextPage: 2,
           });
         });
@@ -92,7 +91,7 @@ export default class Playlists extends React.Component {
           <Row>
             <Col>
               <h3 className="bebas" style={{ marginTop: 60, fontSize: 40 }}>
-                Playlists we love!🗒
+                Playlists we love! 🗒
               </h3>
             </Col>
             <Col>

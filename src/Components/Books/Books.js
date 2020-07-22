@@ -47,7 +47,7 @@ export default class Books extends React.Component {
           console.log(resJson);
           this.setState({
             books: resJson,
-            totalPages: resJson[0].totalpages,
+            totalPages: resJson.length === 0 ? 0 : resJson[0].totalpages,
             nextPage: 2,
           });
         });
