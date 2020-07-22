@@ -41,6 +41,11 @@ export default class NavBar extends React.Component {
                 Courses
               </NavLink>
             </NavItem>
+            <NavItem className="navItem">
+              <NavLink active href="/playlists">
+                Playlists
+              </NavLink>
+            </NavItem>
             {JWT != "null" ? (
               <div
                 onClick={() => {

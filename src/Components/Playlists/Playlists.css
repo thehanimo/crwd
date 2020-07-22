@@ -1,0 +1,14 @@
+.growOnHover {
+  margin: 30px;
+  transform: scale(1);
+  transition: transform 0.3s;
+}
+
+.growOnHover:hover {
+  cursor: pointer;
+  transform: scale(1.025);
+}
+
+.transparent {
+  background-color: transparent !important;
+}

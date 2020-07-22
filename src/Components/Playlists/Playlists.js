@@ -16,24 +16,39 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ReactStarsRating from "react-awesome-stars-rating";
 import { MessageSquare, Clock } from "react-feather";
 import { Nav, NavItem, NavLink } from "shards-react";
-import { backendAPI, booksAPI } from "../../constants";
+import { backendAPI, playlistsAPI } from "../../constants";
 import "loaders.css/loaders.css";
-import "./Books.css";
+import "./Playlists.css";
 
 var Loader = require("react-loaders").Loader;
 
-export default class Books extends React.Component {
+export default class Playlists extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      books: [],
+      playlists: [
+        {
+          id: 1,
+          title: "Mastering the Brand New SwiftUI",
+          author: "HaniMohammed886HaniMohammed886",
+          pub_date: new Date(Date.now()).toISOString(),
+          rating: 0,
+          playlistinfo: {
+            tags: ["Tech"],
+            reviews: [],
+            description:
+              "This playlist helps you master the newly released SwiftUI.",
+            links: [],
+          },
+        },
+      ],
       totalPages: 0,
       nextPage: 1,
     };
   }
   componentDidMount = () => {
     const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
-    fetch(booksAPI, {
+    fetch(playlistsAPI, {
       method: "GET",
       headers: {
         Authorization: JWT,
@@ -46,7 +61,7 @@ export default class Books extends React.Component {
         res.json().then((resJson) => {
           console.log(resJson);
           this.setState({
-            books: resJson,
+            playlists: resJson,
             totalPages: resJson[0].totalpages,
             nextPage: 2,
           });
@@ -56,7 +71,7 @@ export default class Books extends React.Component {
 
   fetchData = () => {
     const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
-    fetch(booksAPI + "?page=" + this.state.nextPage, {
+    fetch(playlistsAPI + "?page=" + this.state.nextPage, {
       method: "GET",
       headers: {
         Authorization: JWT,
@@ -64,7 +79,7 @@ export default class Books extends React.Component {
     }).then((res) => {
       res.json().then((resJson) => {
         this.setState({
-          books: this.state.books.concat(resJson),
+          playlists: this.state.playlists.concat(resJson),
           nextPage: this.state.nextPage + 1,
         });
       });
@@ -77,8 +92,18 @@ export default class Books extends React.Component {
           <Row>
             <Col>
               <h3 className="bebas" style={{ marginTop: 60, fontSize: 40 }}>
-                Books we love! 📚
+                Playlists we love!🗒
               </h3>
+            </Col>
+            <Col>
+              <Button
+                outline
+                theme="success"
+                style={{ marginTop: 60, float: "right" }}
+                href="/playlist/create"
+              >
+                Create a Playlist
+              </Button>
             </Col>
           </Row>
           <InfiniteScroll
@@ -97,10 +122,10 @@ export default class Books extends React.Component {
             }
           >
             <Row style={{ justifyContent: "center" }}>
-              {this.state.books.map((item, index) => (
+              {this.state.playlists.map((item, index) => (
                 <NavLink
                   active
-                  href={"/book/" + item.id}
+                  href={"/playlist/" + item.id}
                   style={{ margin: 0, padding: 0 }}
                 >
                   <Card
@@ -108,41 +133,52 @@ export default class Books extends React.Component {
                       maxWidth: "300px",
                       borderRadius: 20,
                       overflow: "hidden",
-                      backgroundImage:
-                        "linear-gradient(#fff, #fbfbfb, #ffeac1)",
+                      backgroundImage: "linear-gradient(#fff, #eee)",
                     }}
                     className="growOnHover"
                   >
-                    <div
-                      style={{
-                        position: "absolute",
-                        height: 400,
-                        width: 300,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        zIndex: -1,
-                      }}
-                    >
-                      <Loader type="ball-pulse" active color="#333" />
-                    </div>
-                    <CardImg
-                      src={item.picture}
-                      style={{ width: 300, minHeight: 186 * 2 }}
-                    />
                     <CardBody>
                       <CardTitle>{item.title}</CardTitle>
-                      <p>By {item.author}</p>
                       {item.rating == 0 ? (
                         <p style={{ color: "#333" }}>No Ratings yet</p>
                       ) : (
-                        <ReactStarsRating
-                          onChange={() => {}}
-                          value={item.rating}
-                          isEdit={false}
-                          className="transparent"
+                        <>
+                          <ReactStarsRating
+                            onChange={() => {}}
+                            value={item.rating}
+                            isEdit={false}
+                            className="transparent"
+                          />
+                          <div style={{ marginBottom: 27 }} />
+                        </>
+                      )}
+                      <div
+                        style={{
+                          color: "#333",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={item.user_picture}
+                          style={{
+                            height: 50,
+                            minWidth: 50,
+                            borderRadius: 40,
+                            marginRight: 12,
+                          }}
                         />
-                      )}{" "}
+                        <div
+                          style={{
+                            wordWrap: "break-word",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {item.username}
+                        </div>
+                      </div>
                     </CardBody>
                     <CardFooter>
                       <div
@@ -168,7 +204,7 @@ export default class Books extends React.Component {
                           size={16}
                           style={{ marginRight: 4 }}
                         />
-                        {item.bookinfo.reviews.length} reviews
+                        {item.playlistinfo.reviews.length} reviews
                       </div>
                     </CardFooter>
                   </Card>

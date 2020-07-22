@@ -161,11 +161,15 @@ export default function Book() {
             </h3>
             <div>By {bookData.author}</div>
             <div style={{ marginTop: 5 }}>
-              <ReactStarsRating
-                value={bookData.rating}
-                isEdit={false}
-                size={20}
-              />
+              {bookData.rating == 0 ? (
+                <p>No ratings yet</p>
+              ) : (
+                <ReactStarsRating
+                  value={bookData.rating}
+                  isEdit={false}
+                  size={20}
+                />
+              )}
             </div>
             <div
               style={{

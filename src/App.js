@@ -21,6 +21,9 @@ import Books from "./Components/Books/Books";
 import Book from "./Components/Books/Book/Book";
 import Courses from "./Components/Courses/Courses";
 import Course from "./Components/Courses/Course/Course";
+import Playlists from "./Components/Playlists/Playlists";
+import Playlist from "./Components/Playlists/Playlist/Playlist";
+import CreatePlaylist from "./Components/Playlists/CreatePlaylist/CreatePlaylist";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -57,7 +60,7 @@ export default class App extends React.Component {
             <PrivateRoute exact path="/books">
               <Books />
             </PrivateRoute>
-            <PrivateRoute path="/books/:id">
+            <PrivateRoute path="/book/:id">
               <Book />
             </PrivateRoute>
             <PrivateRoute exact path="/courses">
@@ -65,6 +68,15 @@ export default class App extends React.Component {
             </PrivateRoute>
             <PrivateRoute path="/course/:id">
               <Course />
+            </PrivateRoute>
+            <PrivateRoute exact path="/playlists">
+              <Playlists />
+            </PrivateRoute>
+            <PrivateRoute path="/playlist/create">
+              <CreatePlaylist />
+            </PrivateRoute>
+            <PrivateRoute path="/playlist/:id">
+              <Playlist />
             </PrivateRoute>
             <PrivateRoute path="/home">
               <Home />

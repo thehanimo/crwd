@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookie from "js-cookie";
-import { backendAPI, coursesAPI } from "../../../constants";
+import { backendAPI, playlistsAPI } from "../../../constants";
 import {
   Container,
   Row,
@@ -16,16 +16,17 @@ import {
   Alert,
 } from "shards-react";
 import Moment from "react-moment";
+import { ReactTinyLink } from "react-tiny-link";
 
 import { useParams } from "react-router-dom";
 import ReactStarsRating from "react-awesome-stars-rating";
 import { MessageSquare, Clock, User, CheckCircle } from "react-feather";
-import "./Course.css";
+import "./Playlist.css";
 var Loader = require("react-loaders").Loader;
 
-export default function Course() {
+export default function Playlist() {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const [courseData, setCourseData] = useState({});
+  const [playlistData, setPlaylistData] = useState({});
   const [rating, setRating] = useState(0);
   const [error, setError] = useState(false);
   const [username, setUsername] = useState("");
@@ -38,9 +39,8 @@ export default function Course() {
   const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
 
   useEffect(async () => {
-    console.log("asd");
     let username, reviews, res, resJson;
-    res = await fetch(coursesAPI + "?id=" + id, {
+    res = await fetch(playlistsAPI + "?id=" + id, {
       method: "GET",
       headers: {
         Authorization: JWT,
@@ -50,9 +50,9 @@ export default function Course() {
       setError(true);
     } else {
       resJson = await res.json();
-      setCourseData(resJson);
-      setReviews(resJson.courseinfo.reviews);
-      reviews = resJson.courseinfo.reviews;
+      setPlaylistData(resJson);
+      setReviews(resJson.playlistinfo.reviews);
+      reviews = resJson.playlistinfo.reviews;
     }
 
     res = await fetch(backendAPI + "/users", {
@@ -86,7 +86,7 @@ export default function Course() {
     if (rating == 0) return;
     setIsSubmitting(true);
     // fetch
-    fetch(coursesAPI + `/${id}/review`, {
+    fetch(playlistsAPI + `/${id}/review`, {
       method: "POST",
       headers: {
         Authorization: JWT,
@@ -105,7 +105,7 @@ export default function Course() {
         setIsSubmitting(false);
         setShowSuccessAlert(true);
         setRating(0);
-        setCourseData({ ...courseData, rating: resJson.rating });
+        setPlaylistData({ ...playlistData, rating: resJson.rating });
         reviewTextArea.current.value = "";
         updateReviews();
         setTimeout(() => {
@@ -116,7 +116,7 @@ export default function Course() {
   };
 
   const updateReviews = () => {
-    fetch(coursesAPI + `/${id}/reviews`, {
+    fetch(playlistsAPI + `/${id}/reviews`, {
       method: "GET",
     }).then((res) => {
       if (res.status === 500) {
@@ -136,6 +136,10 @@ export default function Course() {
         });
     });
   };
+
+  let content = playlistData.playlistinfo
+    ? playlistData.playlistinfo.content
+    : [];
 
   return (
     <React.Fragment>
@@ -158,21 +162,32 @@ export default function Course() {
         <Row>
           <Col>
             <h3 className="bebas" style={{ marginTop: 60, fontSize: 40 }}>
-              {courseData.title}
+              {playlistData.title}
             </h3>
-            <div>By {courseData.professor}</div>
+            <div>
+              By {playlistData.username}{" "}
+              <img
+                src={playlistData.user_picture}
+                style={{
+                  height: 50,
+                  minWidth: 50,
+                  borderRadius: 40,
+                  marginLeft: 12,
+                }}
+              />
+            </div>
             <div style={{ marginTop: 5 }}>
-              {courseData.rating == 0 ? (
+              {playlistData.rating == 0 ? (
                 <p>No ratings yet</p>
               ) : (
                 <ReactStarsRating
-                  value={courseData.rating}
+                  value={playlistData.rating}
                   isEdit={false}
                   size={20}
                 />
               )}
             </div>
-            {/* <div
+            <div
               style={{
                 justifyContent: "center",
                 alignItems: "center",
@@ -184,120 +199,152 @@ export default function Course() {
                 size={16}
                 style={{ marginRight: 4, marginBottom: 3 }}
               />
-              <Moment format="DD MMM 'YY">{courseData.pub_date}</Moment>
-            </div> */}
-          </Col>
-        </Row>
-
-        <Row style={{ justifyContent: "flex-end" }}>
-          <a href={courseData.link} target="_blank">
-            <Button theme="info">Visit website</Button>
-          </a>
-        </Row>
-
-        <Row>
-          <Col
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              display: "flex",
-              flex: 1,
-              marginTop: 40,
-              marginBottom: 40,
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                height: 300,
-                width: 300,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: -1,
-              }}
-            >
-              <Loader type="line-scale" active color="#333" />
+              <Moment format="DD MMM 'YY">{playlistData.pub_date}</Moment>
             </div>
-            <img
-              src={courseData.picture}
-              style={{ minHeight: 300, width: 300, backgroundColor: "#FBFBFB" }}
-            />
-          </Col>
-        </Row>
-
-        <Row>
-          <Col
-            style={{
-              alignItems: "center",
-              display: "flex",
-              flex: 1,
-              marginTop: 30,
-            }}
-          >
-            <h3 className="bebas" style={{ marginTop: 20, fontSize: 32 }}>
-              {selfReview ? "Your Review" : "Share your review"}
-            </h3>
           </Col>
         </Row>
 
         <Row>
           <Col>
-            <Card
+            <p
               style={{
-                maxWidth: "100%",
-                borderRadius: 5,
-                padding: 0,
-                overflow: "hidden",
+                fontSize: 16,
+                fontFamily: "Poppins",
+                marginTop: 20,
               }}
-              className="growOnHover"
             >
-              <CardBody onClick={() => reviewTextArea.current.focus()}>
-                <h5 className="bebas" style={{ marginBottom: 5, fontSize: 24 }}>
-                  {username}
-                </h5>
-                <ReactStarsRating
-                  onChange={(rating) => {
-                    setRating(rating);
-                  }}
-                  value={rating}
-                  size={20}
-                />
-                <FormTextarea
-                  innerRef={reviewTextArea}
-                  style={{ marginTop: 20, marginBottom: 20 }}
-                  placeholder="Write a review"
-                  disabled={isSubmitting}
-                  onChange={(text) => {
-                    if (selfReview) {
-                      if (
-                        selfReview.review == reviewTextArea.current.value.trim()
-                      )
-                        setIsSelfReviewChanged(false);
-                      else setIsSelfReviewChanged(true);
-                    }
-                  }}
-                />
-                {!isSubmitting ? (
-                  <Button
-                    onClick={submitReview}
-                    disabled={
-                      selfReview
-                        ? selfReview.rating == rating && !isSelfReviewChanged
-                        : rating === 0
-                    }
-                  >
-                    {selfReview ? "Edit" : "Submit"}
-                  </Button>
-                ) : (
-                  <div>
-                    <Loader type="line-scale" active color="#333" />
-                  </div>
-                )}
-              </CardBody>
-            </Card>
+              {playlistData.description}
+            </p>
           </Col>
         </Row>
+
+        <Row>
+          {content.map((item, index) => (
+            <Card
+              style={{
+                margin: 16,
+                padding: 16,
+                width: "100%",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 20,
+                  fontFamily: "Poppins",
+                  fontWeight: 500,
+                }}
+              >
+                {item.title}
+              </p>
+
+              {item.description != "" && (
+                <p
+                  style={{
+                    fontSize: 16,
+                    fontFamily: "Poppins",
+                    marginBottom: 20,
+                  }}
+                >
+                  {item.description}
+                </p>
+              )}
+
+              <ReactTinyLink
+                showGraphic={true}
+                maxLine={2}
+                minLine={1}
+                width={null}
+                url={item.link}
+              />
+
+              <br />
+              <a href={item.link} target="_blank">
+                {item.link}
+              </a>
+            </Card>
+          ))}
+        </Row>
+
+        {playlistData.username !== username && (
+          <>
+            <Row>
+              <Col
+                style={{
+                  alignItems: "center",
+                  display: "flex",
+                  flex: 1,
+                  marginTop: 30,
+                }}
+              >
+                <h3 className="bebas" style={{ marginTop: 20, fontSize: 32 }}>
+                  {selfReview ? "Your Review" : "Share your review"}
+                </h3>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Card
+                  style={{
+                    maxWidth: "100%",
+                    borderRadius: 5,
+                    padding: 0,
+                    overflow: "hidden",
+                  }}
+                  className="growOnHover"
+                >
+                  <CardBody onClick={() => reviewTextArea.current.focus()}>
+                    <h5
+                      className="bebas"
+                      style={{ marginBottom: 5, fontSize: 24 }}
+                    >
+                      {username}
+                    </h5>
+                    <ReactStarsRating
+                      onChange={(rating) => {
+                        setRating(rating);
+                      }}
+                      value={rating}
+                      size={20}
+                    />
+                    <FormTextarea
+                      innerRef={reviewTextArea}
+                      style={{ marginTop: 20, marginBottom: 20 }}
+                      placeholder="Write a review"
+                      disabled={isSubmitting}
+                      onChange={(text) => {
+                        if (selfReview) {
+                          if (
+                            selfReview.review ==
+                            reviewTextArea.current.value.trim()
+                          )
+                            setIsSelfReviewChanged(false);
+                          else setIsSelfReviewChanged(true);
+                        }
+                      }}
+                    />
+                    {!isSubmitting ? (
+                      <Button
+                        onClick={submitReview}
+                        disabled={
+                          selfReview
+                            ? selfReview.rating == rating &&
+                              !isSelfReviewChanged
+                            : rating === 0
+                        }
+                      >
+                        {selfReview ? "Edit" : "Submit"}
+                      </Button>
+                    ) : (
+                      <div>
+                        <Loader type="line-scale" active color="#333" />
+                      </div>
+                    )}
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          </>
+        )}
 
         {reviews.length !== 0 && (
           <Row>
