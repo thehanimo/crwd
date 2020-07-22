@@ -19,6 +19,8 @@ import Login from "./Components/Login/Login";
 import Cookie from "js-cookie";
 import Books from "./Components/Books/Books";
 import Book from "./Components/Books/Book/Book";
+import Courses from "./Components/Courses/Courses";
+import Course from "./Components/Courses/Course/Course";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -57,6 +59,12 @@ export default class App extends React.Component {
             </PrivateRoute>
             <PrivateRoute path="/books/:id">
               <Book />
+            </PrivateRoute>
+            <PrivateRoute exact path="/courses">
+              <Courses />
+            </PrivateRoute>
+            <PrivateRoute path="/course/:id">
+              <Course />
             </PrivateRoute>
             <PrivateRoute path="/home">
               <Home />

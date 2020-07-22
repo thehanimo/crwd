@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookie from "js-cookie";
-import { backendAPI, booksAPI } from "../../../constants";
+import { backendAPI, coursesAPI } from "../../../constants";
 import {
   Container,
   Row,
@@ -20,12 +20,12 @@ import Moment from "react-moment";
 import { useParams } from "react-router-dom";
 import ReactStarsRating from "react-awesome-stars-rating";
 import { MessageSquare, Clock, User, CheckCircle } from "react-feather";
-import "./Book.css";
+import "./Course.css";
 var Loader = require("react-loaders").Loader;
 
-export default function Book() {
+export default function Course() {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const [bookData, setBookData] = useState({});
+  const [courseData, setCourseData] = useState({});
   const [rating, setRating] = useState(0);
   const [error, setError] = useState(false);
   const [username, setUsername] = useState("");
@@ -38,8 +38,9 @@ export default function Book() {
   const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
 
   useEffect(async () => {
+    console.log("asd");
     let username, reviews, res, resJson;
-    res = await fetch(booksAPI + "?id=" + id, {
+    res = await fetch(coursesAPI + "?id=" + id, {
       method: "GET",
       headers: {
         Authorization: JWT,
@@ -49,9 +50,9 @@ export default function Book() {
       setError(true);
     } else {
       resJson = await res.json();
-      setBookData(resJson);
-      setReviews(resJson.bookinfo.reviews);
-      reviews = resJson.bookinfo.reviews;
+      setCourseData(resJson);
+      setReviews(resJson.courseinfo.reviews);
+      reviews = resJson.courseinfo.reviews;
     }
 
     res = await fetch(backendAPI + "/users", {
@@ -85,7 +86,7 @@ export default function Book() {
     if (rating == 0) return;
     setIsSubmitting(true);
     // fetch
-    fetch(booksAPI + `/${id}/review`, {
+    fetch(coursesAPI + `/${id}/review`, {
       method: "POST",
       headers: {
         Authorization: JWT,
@@ -104,7 +105,7 @@ export default function Book() {
         setIsSubmitting(false);
         setShowSuccessAlert(true);
         setRating(0);
-        setBookData({ ...bookData, rating: resJson.rating });
+        setCourseData({ ...courseData, rating: resJson.rating });
         reviewTextArea.current.value = "";
         updateReviews();
         setTimeout(() => {
@@ -115,7 +116,7 @@ export default function Book() {
   };
 
   const updateReviews = () => {
-    fetch(booksAPI + `/${id}/reviews`, {
+    fetch(coursesAPI + `/${id}/reviews`, {
       method: "GET",
     }).then((res) => {
       if (res.status === 500) {
@@ -157,17 +158,17 @@ export default function Book() {
         <Row>
           <Col>
             <h3 className="bebas" style={{ marginTop: 60, fontSize: 40 }}>
-              {bookData.title}
+              {courseData.title}
             </h3>
-            <div>By {bookData.author}</div>
+            <div>By {courseData.professor}</div>
             <div style={{ marginTop: 5 }}>
               <ReactStarsRating
-                value={bookData.rating}
+                value={courseData.rating}
                 isEdit={false}
                 size={20}
               />
             </div>
-            <div
+            {/* <div
               style={{
                 justifyContent: "center",
                 alignItems: "center",
@@ -179,14 +180,14 @@ export default function Book() {
                 size={16}
                 style={{ marginRight: 4, marginBottom: 3 }}
               />
-              <Moment format="DD MMM 'YY">{bookData.pub_date}</Moment>
-            </div>
+              <Moment format="DD MMM 'YY">{courseData.pub_date}</Moment>
+            </div> */}
           </Col>
         </Row>
 
         <Row style={{ justifyContent: "flex-end" }}>
-          <a href={bookData.link} target="_blank">
-            <Button theme="warning">Buy on Amazon</Button>
+          <a href={courseData.link} target="_blank">
+            <Button theme="info">Visit website</Button>
           </a>
         </Row>
 
@@ -215,8 +216,8 @@ export default function Book() {
               <Loader type="line-scale" active color="#333" />
             </div>
             <img
-              src={bookData.picture}
-              style={{ minHeight: 300, width: 300 }}
+              src={courseData.picture}
+              style={{ minHeight: 300, width: 300, backgroundColor: "#FBFBFB" }}
             />
           </Col>
         </Row>
