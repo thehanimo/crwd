@@ -163,11 +163,15 @@ export default function Course() {
             </h3>
             <div>By {courseData.professor}</div>
             <div style={{ marginTop: 5 }}>
-              <ReactStarsRating
-                value={courseData.rating}
-                isEdit={false}
-                size={20}
-              />
+              {courseData.rating == 0 ? (
+                <p>No ratings yet</p>
+              ) : (
+                <ReactStarsRating
+                  value={courseData.rating}
+                  isEdit={false}
+                  size={20}
+                />
+              )}
             </div>
             {/* <div
               style={{

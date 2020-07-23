@@ -47,7 +47,7 @@ export default class Books extends React.Component {
           console.log(resJson);
           this.setState({
             books: resJson,
-            totalPages: resJson[0].totalpages,
+            totalPages: resJson.length === 0 ? 0 : resJson[0].totalpages,
             nextPage: 2,
           });
         });
@@ -100,7 +100,7 @@ export default class Books extends React.Component {
               {this.state.books.map((item, index) => (
                 <NavLink
                   active
-                  href={"/books/" + item.id}
+                  href={"/book/" + item.id}
                   style={{ margin: 0, padding: 0 }}
                 >
                   <Card
