@@ -189,6 +189,13 @@ export default function Book() {
             <Button theme="warning">Buy on Amazon</Button>
           </a>
         </Row>
+         <br />
+        
+        <Row style={{ justifyContent: "flex-end" }}>
+          <a href={"/discussions/book/"+id} target="_blank">
+            <Button theme="info">Discuss</Button>
+          </a>
+        </Row>
 
         <Row>
           <Col

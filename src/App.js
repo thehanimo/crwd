@@ -21,6 +21,8 @@ import Books from "./Components/Books/Books";
 import Book from "./Components/Books/Book/Book";
 import Courses from "./Components/Courses/Courses";
 import Course from "./Components/Courses/Course/Course";
+import Discussion from "./Components/Discussions/Discussions"
+import Discussions from "./Components/Discussions/Discussions";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -68,6 +70,9 @@ export default class App extends React.Component {
             </PrivateRoute>
             <PrivateRoute path="/home">
               <Home />
+            </PrivateRoute>
+            <PrivateRoute path="/discussions/:type/:id">
+               <Discussions />
             </PrivateRoute>
             <Route exact path="/linkedin" component={LinkedInPopUp} />
           </Switch>

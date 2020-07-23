@@ -1,3 +1,6 @@
-export const backendAPI = "http://localhost:3001";
-export const booksAPI = "http://localhost:3001/books";
-export const coursesAPI = "http://localhost:3001/courses";
+const host = "localhost:3001";
+
+export const backendAPI = `http://${host}`;
+export const booksAPI = `http://${host}/books`;
+export const discussionAPI = `http://${host}/discussions`;
+export const coursesAPI = `http://${host}/courses`;
