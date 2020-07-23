@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookie from "js-cookie";
-import { backendAPI, coursesAPI, dicussionAPI } from "../../../constants";
+import {
+  backendAPI,
+  coursesAPI,
+  dicussionAPI,
+  favouritesAPI,
+} from "../../../constants";
 import {
   Container,
   Row,
@@ -17,14 +22,17 @@ import {
 } from "shards-react";
 
 import Moment from "react-moment";
+import UseAnimations from "react-useanimations";
+import heart from "react-useanimations/lib/heart";
 
 import { useParams } from "react-router-dom";
-import ReactStarsRating from "react-awesome-stars-rating";
+import Rating from "react-rating";
 import { MessageSquare, Clock, User, CheckCircle } from "react-feather";
 import "./Course.css";
 var Loader = require("react-loaders").Loader;
 
 export default function Course() {
+  const [isFave, setIsFave] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [courseData, setCourseData] = useState({});
   const [rating, setRating] = useState(0);
@@ -39,7 +47,6 @@ export default function Course() {
   const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
 
   useEffect(async () => {
-    console.log("asd");
     let username, reviews, res, resJson;
     res = await fetch(coursesAPI + "?id=" + id, {
       method: "GET",
@@ -67,10 +74,10 @@ export default function Course() {
     } else {
       resJson = await res.json();
       setUsername(resJson.username);
+      let faveArr = resJson.profileinfo.favouriteCourses;
+      if (faveArr.includes(id)) setIsFave(true);
       username = resJson.username;
     }
-
-    console.log(reviews, username);
 
     for (let i = 0; i < reviews.length; i++) {
       if (reviews[i].username === username) {
@@ -166,10 +173,12 @@ export default function Course() {
               {courseData.rating == 0 ? (
                 <p>No ratings yet</p>
               ) : (
-                <ReactStarsRating
-                  value={courseData.rating}
-                  isEdit={false}
-                  size={20}
+                <Rating
+                  emptySymbol="fa fa-star fa-2x emptyStar"
+                  fullSymbol="fa fa-star fa-2x fullStar"
+                  fractions={2}
+                  initialRating={courseData.rating}
+                  readonly
                 />
               )}
             </div>
@@ -191,15 +200,57 @@ export default function Course() {
         </Row>
 
         <Row style={{ justifyContent: "flex-end" }}>
-          <a href={courseData.link} target="_blank">
-            <Button theme="info">Visit website</Button>
-          </a>
-        </Row>
-        <br />
-        <Row style={{ justifyContent: "flex-end" }}>
-          <a href={"/discussion/course/"+id} target="_blank">
-            <Button theme="info">Discuss</Button>
-          </a>
+          <Button href={"/discussions/course/" + id} outline>
+            <MessageSquare size={16} /> Discuss
+          </Button>
+          <div style={{ width: 20 }} />
+          <Button theme="info" href={courseData.link} target="_blank">
+            Visit website
+          </Button>
+          <Button
+            style={{
+              marginLeft: 20,
+              padding: 0,
+              borderRadius: 40,
+              height: 40,
+              width: 40,
+              display: "flex",
+              justifyContent: "center",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
+            }}
+            theme="light"
+            outline
+          >
+            <UseAnimations
+              animation={heart}
+              size={30}
+              style={{ padding: 100 }}
+              onClick={async () => {
+                if (isFave) {
+                  await fetch(favouritesAPI + `/course/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                      Authorization: JWT,
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                  });
+                } else {
+                  await fetch(favouritesAPI + `/course/${id}`, {
+                    method: "POST",
+                    headers: {
+                      Authorization: JWT,
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                  });
+                }
+
+                setIsFave(!isFave);
+              }}
+              reverse={isFave}
+            />
+          </Button>
         </Row>
 
         <Row>
@@ -263,12 +314,14 @@ export default function Course() {
                 <h5 className="bebas" style={{ marginBottom: 5, fontSize: 24 }}>
                   {username}
                 </h5>
-                <ReactStarsRating
+                <Rating
+                  emptySymbol="fa fa-star fa-2x emptyStar"
+                  fullSymbol="fa fa-star fa-2x fullStar"
+                  fractions={2}
                   onChange={(rating) => {
                     setRating(rating);
                   }}
-                  value={rating}
-                  size={20}
+                  initialRating={rating}
                 />
                 <FormTextarea
                   innerRef={reviewTextArea}
@@ -342,12 +395,14 @@ export default function Course() {
                   >
                     {item.username}
                   </h5>
-                  <ReactStarsRating
-                    onChange={() => {}}
-                    value={item.rating}
-                    isEdit={false}
-                    size={20}
+                  <Rating
+                    emptySymbol="fa fa-star fa-2x emptyStar"
+                    fullSymbol="fa fa-star fa-2x fullStar"
+                    fractions={2}
+                    initialRating={item.rating}
+                    readonly
                   />
+
                   <div style={{ marginTop: 10 }}>{item.review}</div>
                 </CardBody>
                 <CardFooter>

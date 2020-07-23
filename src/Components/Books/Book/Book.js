@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookie from "js-cookie";
-import { backendAPI, booksAPI } from "../../../constants";
+import { backendAPI, booksAPI, favouritesAPI } from "../../../constants";
 import {
   Container,
   Row,
@@ -14,16 +14,26 @@ import {
   Button,
   FormTextarea,
   Alert,
+  ButtonGroup,
 } from "shards-react";
 import Moment from "react-moment";
+import UseAnimations from "react-useanimations";
+import heart from "react-useanimations/lib/heart";
 
 import { useParams } from "react-router-dom";
-import ReactStarsRating from "react-awesome-stars-rating";
-import { MessageSquare, Clock, User, CheckCircle } from "react-feather";
+import Rating from "react-rating";
+import {
+  MessageSquare,
+  Clock,
+  User,
+  CheckCircle,
+  ShoppingCart,
+} from "react-feather";
 import "./Book.css";
 var Loader = require("react-loaders").Loader;
 
 export default function Book() {
+  const [isFave, setIsFave] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [bookData, setBookData] = useState({});
   const [rating, setRating] = useState(0);
@@ -65,6 +75,8 @@ export default function Book() {
     } else {
       resJson = await res.json();
       setUsername(resJson.username);
+      let faveArr = resJson.profileinfo.favouriteBooks;
+      if (faveArr.includes(id)) setIsFave(true);
       username = resJson.username;
     }
 
@@ -164,10 +176,12 @@ export default function Book() {
               {bookData.rating == 0 ? (
                 <p>No ratings yet</p>
               ) : (
-                <ReactStarsRating
-                  value={bookData.rating}
-                  isEdit={false}
-                  size={20}
+                <Rating
+                  emptySymbol="fa fa-star fa-2x emptyStar"
+                  fullSymbol="fa fa-star fa-2x fullStar"
+                  fractions={2}
+                  initialRating={bookData.rating}
+                  readonly
                 />
               )}
             </div>
@@ -189,17 +203,60 @@ export default function Book() {
         </Row>
 
         <Row style={{ justifyContent: "flex-end" }}>
-          <a href={bookData.link} target="_blank">
-            <Button theme="warning">Buy on Amazon</Button>
-          </a>
+          <Button href={"/discussions/book/" + id} outline>
+            <MessageSquare size={16} /> Discuss
+          </Button>
+          <div style={{ width: 20 }} />
+          <Button theme="warning" href={bookData.link} target="_blank">
+            Buy on Amazon
+          </Button>
+          <Button
+            style={{
+              marginLeft: 20,
+              padding: 0,
+              borderRadius: 40,
+              height: 40,
+              width: 40,
+              display: "flex",
+              justifyContent: "center",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
+            }}
+            theme="light"
+            outline
+          >
+            <UseAnimations
+              animation={heart}
+              size={30}
+              style={{ padding: 100 }}
+              onClick={async () => {
+                if (isFave) {
+                  await fetch(favouritesAPI + `/book/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                      Authorization: JWT,
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                  });
+                } else {
+                  await fetch(favouritesAPI + `/book/${id}`, {
+                    method: "POST",
+                    headers: {
+                      Authorization: JWT,
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                  });
+                }
+
+                setIsFave(!isFave);
+              }}
+              reverse={isFave}
+            />
+          </Button>
         </Row>
-         <br />
-        
-        <Row style={{ justifyContent: "flex-end" }}>
-          <a href={"/discussions/book/"+id} target="_blank">
-            <Button theme="info">Discuss</Button>
-          </a>
-        </Row>
+
+        <br />
 
         <Row>
           <Col
@@ -262,12 +319,14 @@ export default function Book() {
                 <h5 className="bebas" style={{ marginBottom: 5, fontSize: 24 }}>
                   {username}
                 </h5>
-                <ReactStarsRating
+                <Rating
+                  emptySymbol="fa fa-star fa-2x emptyStar"
+                  fullSymbol="fa fa-star fa-2x fullStar"
+                  fractions={2}
                   onChange={(rating) => {
                     setRating(rating);
                   }}
-                  value={rating}
-                  size={20}
+                  initialRating={rating}
                 />
                 <FormTextarea
                   innerRef={reviewTextArea}
@@ -341,11 +400,12 @@ export default function Book() {
                   >
                     {item.username}
                   </h5>
-                  <ReactStarsRating
-                    onChange={() => {}}
-                    value={item.rating}
-                    isEdit={false}
-                    size={20}
+                  <Rating
+                    emptySymbol="fa fa-star fa-2x emptyStar"
+                    fullSymbol="fa fa-star fa-2x fullStar"
+                    fractions={2}
+                    initialRating={item.rating}
+                    readonly
                   />
                   <div style={{ marginTop: 10 }}>{item.review}</div>
                 </CardBody>

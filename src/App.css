@@ -29,7 +29,7 @@
 }
 
 .bebas {
-  font-family: 'BebasNeue-Regular';
+  font-family: "BebasNeue-Regular";
 }
 
 @keyframes App-logo-spin {
@@ -42,6 +42,16 @@
 }
 
 @font-face {
-  font-family: 'BebasNeue-Regular';
-  src: local('BebasNeue-Regular'), url(./fonts/BebasNeue-Regular.otf) format('opentype');
+  font-family: "BebasNeue-Regular";
+  src: local("BebasNeue-Regular"),
+    url(./fonts/BebasNeue-Regular.otf) format("opentype");
+}
+
+.emptyStar {
+  color: gray;
+  font-size: large;
+}
+.fullStar {
+  color: #ffbf28;
+  font-size: large;
 }

@@ -123,7 +123,7 @@ export default function CreatePlaylist() {
       if (res.status === 401 || res.status === 500) {
         return;
       } else {
-        alert("Success");
+        window.location.href = "/playlists";
       }
     });
   };
@@ -341,7 +341,8 @@ export default function CreatePlaylist() {
               pill
               style={{
                 float: "right",
-                marginTop: 0,
+                marginTop: -20,
+                marginBottom: 20,
               }}
               onClick={() =>
                 setLinks(

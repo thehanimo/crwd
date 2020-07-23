@@ -11,11 +11,13 @@ import {
   CardBody,
   CardFooter,
   Button,
+  Nav,
+  NavItem,
+  NavLink,
 } from "shards-react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import ReactStarsRating from "react-awesome-stars-rating";
+import Rating from "react-rating";
 import { MessageSquare, Clock } from "react-feather";
-import { Nav, NavItem, NavLink } from "shards-react";
 import { backendAPI, booksAPI } from "../../constants";
 import "loaders.css/loaders.css";
 import "./Books.css";
@@ -27,7 +29,7 @@ export default class Books extends React.Component {
     super(props);
     this.state = {
       books: [],
-      totalPages: 0,
+      totalPages: 10,
       nextPage: 1,
     };
   }
@@ -101,7 +103,7 @@ export default class Books extends React.Component {
                 <NavLink
                   active
                   href={"/book/" + item.id}
-                  style={{ margin: 0, padding: 0 }}
+                  style={{ margin: 0, padding: 0, color: "#333" }}
                 >
                   <Card
                     style={{
@@ -136,11 +138,12 @@ export default class Books extends React.Component {
                       {item.rating == 0 ? (
                         <p style={{ color: "#333" }}>No Ratings yet</p>
                       ) : (
-                        <ReactStarsRating
-                          onChange={() => {}}
-                          value={item.rating}
-                          isEdit={false}
-                          className="transparent"
+                        <Rating
+                          emptySymbol="fa fa-star fa-2x emptyStar"
+                          fullSymbol="fa fa-star fa-2x fullStar"
+                          fractions={2}
+                          initialRating={item.rating}
+                          readonly
                         />
                       )}{" "}
                     </CardBody>
@@ -155,9 +158,9 @@ export default class Books extends React.Component {
                         <Clock
                           color="#888"
                           size={16}
-                          style={{ marginRight: 4 }}
+                          style={{ marginRight: 4, marginTop: -3 }}
                         />
-                        {item.pub_date.split("T")[0]}
+                        {item.pub_date.split("-")[0]}
                         <span
                           style={{
                             marginLeft: 20,

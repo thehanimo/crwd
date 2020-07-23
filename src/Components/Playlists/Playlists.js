@@ -11,11 +11,14 @@ import {
   CardBody,
   CardFooter,
   Button,
+  Nav,
+  NavItem,
+  NavLink,
 } from "shards-react";
+import Moment from "react-moment";
 import InfiniteScroll from "react-infinite-scroll-component";
-import ReactStarsRating from "react-awesome-stars-rating";
+import Rating from "react-rating";
 import { MessageSquare, Clock } from "react-feather";
-import { Nav, NavItem, NavLink } from "shards-react";
 import { backendAPI, playlistsAPI } from "../../constants";
 import "loaders.css/loaders.css";
 import "./Playlists.css";
@@ -42,7 +45,7 @@ export default class Playlists extends React.Component {
           },
         },
       ],
-      totalPages: 0,
+      totalPages: 10,
       nextPage: 1,
     };
   }
@@ -125,7 +128,7 @@ export default class Playlists extends React.Component {
                 <NavLink
                   active
                   href={"/playlist/" + item.id}
-                  style={{ margin: 0, padding: 0 }}
+                  style={{ margin: 0, padding: 0, color: "#333" }}
                 >
                   <Card
                     style={{
@@ -142,11 +145,12 @@ export default class Playlists extends React.Component {
                         <p style={{ color: "#333" }}>No Ratings yet</p>
                       ) : (
                         <>
-                          <ReactStarsRating
-                            onChange={() => {}}
-                            value={item.rating}
-                            isEdit={false}
-                            className="transparent"
+                          <Rating
+                            emptySymbol="fa fa-star fa-2x emptyStar"
+                            fullSymbol="fa fa-star fa-2x fullStar"
+                            fractions={2}
+                            initialRating={item.rating}
+                            readonly
                           />
                           <div style={{ marginBottom: 27 }} />
                         </>
@@ -165,6 +169,8 @@ export default class Playlists extends React.Component {
                             minWidth: 50,
                             borderRadius: 40,
                             marginRight: 12,
+                            backgroundColor: "white",
+                            boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
                           }}
                         />
                         <div
@@ -190,9 +196,9 @@ export default class Playlists extends React.Component {
                         <Clock
                           color="#888"
                           size={16}
-                          style={{ marginRight: 4 }}
+                          style={{ marginRight: 4, marginTop: -3 }}
                         />
-                        {item.pub_date.split("T")[0]}
+                        <Moment format="DD MMM 'YY">{item.pub_date}</Moment>
                         <span
                           style={{
                             marginLeft: 20,

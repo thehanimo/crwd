@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookie from "js-cookie";
-import { backendAPI, playlistsAPI } from "../../../constants";
+import { backendAPI, playlistsAPI, favouritesAPI } from "../../../constants";
 import {
   Container,
   Row,
@@ -16,15 +16,18 @@ import {
   Alert,
 } from "shards-react";
 import Moment from "react-moment";
+import UseAnimations from "react-useanimations";
+import heart from "react-useanimations/lib/heart";
 import { ReactTinyLink } from "react-tiny-link";
 
 import { useParams } from "react-router-dom";
-import ReactStarsRating from "react-awesome-stars-rating";
+import Rating from "react-rating";
 import { MessageSquare, Clock, User, CheckCircle } from "react-feather";
 import "./Playlist.css";
 var Loader = require("react-loaders").Loader;
 
 export default function Playlist() {
+  const [isFave, setIsFave] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [playlistData, setPlaylistData] = useState({});
   const [rating, setRating] = useState(0);
@@ -66,6 +69,8 @@ export default function Playlist() {
     } else {
       resJson = await res.json();
       setUsername(resJson.username);
+      let faveArr = resJson.profileinfo.favouritePlaylists;
+      if (faveArr.includes(id)) setIsFave(true);
       username = resJson.username;
     }
 
@@ -161,29 +166,46 @@ export default function Playlist() {
 
         <Row>
           <Col>
-            <h3 className="bebas" style={{ marginTop: 60, fontSize: 40 }}>
+            <h3
+              style={{
+                marginTop: 60,
+                fontSize: 30,
+                fontFamily: "Poppins",
+                fontWeight: "bold",
+              }}
+            >
               {playlistData.title}
             </h3>
-            <div>
-              By {playlistData.username}{" "}
+            <div
+              style={{
+                fontSize: 14,
+                fontFamily: "Poppins",
+                fontWeight: "bold",
+              }}
+            >
               <img
                 src={playlistData.user_picture}
                 style={{
-                  height: 50,
-                  minWidth: 50,
+                  height: 40,
+                  minWidth: 40,
                   borderRadius: 40,
-                  marginLeft: 12,
+                  marginRight: 12,
+                  backgroundColor: "white",
+                  boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
                 }}
               />
+              {playlistData.username}
             </div>
             <div style={{ marginTop: 5 }}>
               {playlistData.rating == 0 ? (
-                <p>No ratings yet</p>
+                <span>No ratings yet</span>
               ) : (
-                <ReactStarsRating
-                  value={playlistData.rating}
-                  isEdit={false}
-                  size={20}
+                <Rating
+                  emptySymbol="fa fa-star fa-2x emptyStar"
+                  fullSymbol="fa fa-star fa-2x fullStar"
+                  fractions={2}
+                  initialRating={playlistData.rating}
+                  readonly
                 />
               )}
             </div>
@@ -208,7 +230,7 @@ export default function Playlist() {
           <Col>
             <p
               style={{
-                fontSize: 16,
+                fontSize: 20,
                 fontFamily: "Poppins",
                 marginTop: 20,
               }}
@@ -217,11 +239,56 @@ export default function Playlist() {
             </p>
           </Col>
         </Row>
+        <Row style={{ justifyContent: "flex-end" }}>
+          <Button href={"/discussions/playlist/" + id} outline>
+            <MessageSquare size={16} /> Discuss
+          </Button>
+          {playlistData.username != username && (
+            <Button
+              style={{
+                marginLeft: 20,
+                padding: 0,
+                borderRadius: 40,
+                height: 40,
+                width: 40,
+                display: "flex",
+                justifyContent: "center",
+                boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
+              }}
+              theme="light"
+              outline
+            >
+              <UseAnimations
+                animation={heart}
+                size={30}
+                style={{ padding: 100 }}
+                onClick={async () => {
+                  if (isFave) {
+                    await fetch(favouritesAPI + `/playlist/${id}`, {
+                      method: "DELETE",
+                      headers: {
+                        Authorization: JWT,
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                      },
+                    });
+                  } else {
+                    await fetch(favouritesAPI + `/playlist/${id}`, {
+                      method: "POST",
+                      headers: {
+                        Authorization: JWT,
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                      },
+                    });
+                  }
 
-        <Row style={{ justifyContent: "flex" }}>
-          <a href={"/discussions/playlist/"+id} target="_blank">
-            <Button theme="info">Discuss</Button>
-          </a>
+                  setIsFave(!isFave);
+                }}
+                reverse={isFave}
+              />
+            </Button>
+          )}
         </Row>
 
         <Row>
@@ -271,6 +338,8 @@ export default function Playlist() {
           ))}
         </Row>
 
+        {playlistData.username === username && <div style={{ height: 100 }} />}
+
         {playlistData.username !== username && (
           <>
             <Row>
@@ -305,12 +374,14 @@ export default function Playlist() {
                     >
                       {username}
                     </h5>
-                    <ReactStarsRating
+                    <Rating
+                      emptySymbol="fa fa-star fa-2x emptyStar"
+                      fullSymbol="fa fa-star fa-2x fullStar"
+                      fractions={2}
                       onChange={(rating) => {
                         setRating(rating);
                       }}
-                      value={rating}
-                      size={20}
+                      initialRating={rating}
                     />
                     <FormTextarea
                       innerRef={reviewTextArea}
@@ -388,11 +459,12 @@ export default function Playlist() {
                   >
                     {item.username}
                   </h5>
-                  <ReactStarsRating
-                    onChange={() => {}}
-                    value={item.rating}
-                    isEdit={false}
-                    size={20}
+                  <Rating
+                    emptySymbol="fa fa-star fa-2x emptyStar"
+                    fullSymbol="fa fa-star fa-2x fullStar"
+                    fractions={2}
+                    initialRating={item.rating}
+                    readonly
                   />
                   <div style={{ marginTop: 10 }}>{item.review}</div>
                 </CardBody>
