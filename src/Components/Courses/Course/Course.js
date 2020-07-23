@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookie from "js-cookie";
-import { backendAPI, coursesAPI } from "../../../constants";
+import { backendAPI, coursesAPI, dicussionAPI } from "../../../constants";
 import {
   Container,
   Row,
@@ -15,6 +15,7 @@ import {
   FormTextarea,
   Alert,
 } from "shards-react";
+
 import Moment from "react-moment";
 
 import { useParams } from "react-router-dom";
@@ -194,6 +195,12 @@ export default function Course() {
             <Button theme="info">Visit website</Button>
           </a>
         </Row>
+        <br />
+        <Row style={{ justifyContent: "flex-end" }}>
+          <a href={"/discussion/course/"+id} target="_blank">
+            <Button theme="info">Discuss</Button>
+          </a>
+        </Row>
 
         <Row>
           <Col
@@ -356,7 +363,7 @@ export default function Course() {
                       size={12}
                       style={{ marginRight: 4, marginBottom: 3 }}
                     />
-                    <Moment fromNow>{item.date_written}</Moment>
+                    <Moment fromNow date={item.date_written}></Moment>
                   </div>
                 </CardFooter>
               </Card>
