@@ -55,3 +55,11 @@
   color: #ffbf28;
   font-size: large;
 }
+
+.searchdropdown {
+  background-color: #fbfbfb;
+}
+
+.searchdropdown:hover {
+  background-color: #eeeeee;
+}

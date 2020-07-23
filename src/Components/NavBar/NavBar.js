@@ -1,48 +1,53 @@
-import React from "react";
-import { Button } from "shards-react";
-import { Nav, NavItem, NavLink } from "shards-react";
+import React, { useState } from "react";
+import { Button, Collapse, NavbarToggler, FormInput } from "shards-react";
+import { Nav, NavItem, NavLink, Navbar, NavbarBrand } from "shards-react";
 import "./NavBar.css";
 import Cookie from "js-cookie";
+import { useRouteMatch } from "react-router-dom";
 
-export default class NavBar extends React.Component {
-  render() {
-    const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
-    return (
-      <React.Fragment>
-        <div
-          className="container-fluid navBar"
-          style={{ position: "fixed", backgroundColor: "#EEE", zIndex: 2 }}
+export default function NavBar() {
+  const [collapseOpen, setCollapseOpen] = useState(false);
+  const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
+  const isLogin = useRouteMatch("/login");
+  const isHome = useRouteMatch("/home");
+  const isBooks = useRouteMatch("/books");
+  const isCourses = useRouteMatch("/courses");
+  const isPlaylists = useRouteMatch("/playlists");
+
+  return (
+    <React.Fragment>
+      <Navbar type="light" theme="light" expand="md">
+        <NavbarBrand style={{ margin: 0, padding: 0 }}>
+          <img
+            src={require("../../images/crwd-logo-final.png")}
+            style={{ height: 60 }}
+          />
+        </NavbarBrand>
+        <NavbarToggler onClick={setCollapseOpen} />
+
+        <Collapse
+          open={collapseOpen}
+          navbar
+          style={{ justifyContent: "flex-end" }}
         >
-          <Nav style={{ justifyContent: "flex-end" }}>
-            <div
-              style={{
-                display: "flex",
-                flex: 1,
-                justifyContent: "flex-start",
-              }}
-            >
-              <img
-                src={require("../../images/crwd-logo-final.png")}
-                style={{ height: 60 }}
-              />
-            </div>
+          <Nav navbar>
             <NavItem className="navItem">
-              <NavLink active href="/home">
+              <NavLink active={isHome} href="/home">
                 Home
               </NavLink>
             </NavItem>
             <NavItem className="navItem">
-              <NavLink active href="/books">
+              <NavLink active={isBooks} href="/books">
                 Books
               </NavLink>
             </NavItem>
             <NavItem className="navItem">
-              <NavLink active href="/courses">
+              <NavLink active={isCourses} href="/courses">
                 Courses
               </NavLink>
             </NavItem>
             <NavItem className="navItem">
-              <NavLink active href="/playlists">
+              <NavLink active={isPlaylists} href="/playlists">
                 Playlists
               </NavLink>
             </NavItem>
@@ -59,13 +64,14 @@ export default class NavBar extends React.Component {
               </div>
             ) : (
               <NavItem className="navItem">
-                <NavLink href="/login">Log in</NavLink>
+                <NavLink href="/login" active={isLogin}>
+                  Login
+                </NavLink>
               </NavItem>
             )}
           </Nav>
-        </div>
-        <div className="container-fluid navBar" style={{ marginBottom: 60 }} />
-      </React.Fragment>
-    );
-  }
+        </Collapse>
+      </Navbar>
+    </React.Fragment>
+  );
 }

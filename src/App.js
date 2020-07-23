@@ -25,6 +25,7 @@ import Discussions from "./Components/Discussions/Discussions";
 import Playlists from "./Components/Playlists/Playlists";
 import Playlist from "./Components/Playlists/Playlist/Playlist";
 import CreatePlaylist from "./Components/Playlists/CreatePlaylist/CreatePlaylist";
+import Search from "./Components/Search/Search";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -83,7 +84,10 @@ export default class App extends React.Component {
               <Home />
             </PrivateRoute>
             <PrivateRoute path="/discussions/:type/:id">
-               <Discussions />
+              <Discussions />
+            </PrivateRoute>
+            <PrivateRoute path="/search/:term">
+              <Search />
             </PrivateRoute>
             <Route exact path="/linkedin" component={LinkedInPopUp} />
           </Switch>

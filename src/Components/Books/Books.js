@@ -21,6 +21,7 @@ import { MessageSquare, Clock } from "react-feather";
 import { backendAPI, booksAPI } from "../../constants";
 import "loaders.css/loaders.css";
 import "./Books.css";
+import { renderBook } from "../Global/Global";
 
 var Loader = require("react-loaders").Loader;
 
@@ -99,84 +100,7 @@ export default class Books extends React.Component {
             }
           >
             <Row style={{ justifyContent: "center" }}>
-              {this.state.books.map((item, index) => (
-                <NavLink
-                  active
-                  href={"/book/" + item.id}
-                  style={{ margin: 0, padding: 0, color: "#333" }}
-                >
-                  <Card
-                    style={{
-                      maxWidth: "300px",
-                      borderRadius: 20,
-                      overflow: "hidden",
-                      backgroundImage:
-                        "linear-gradient(#fff, #fbfbfb, #ffeac1)",
-                    }}
-                    className="growOnHover"
-                  >
-                    <div
-                      style={{
-                        position: "absolute",
-                        height: 400,
-                        width: 300,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        zIndex: -1,
-                      }}
-                    >
-                      <Loader type="ball-pulse" active color="#333" />
-                    </div>
-                    <CardImg
-                      src={item.picture}
-                      style={{ width: 300, minHeight: 186 * 2 }}
-                    />
-                    <CardBody>
-                      <CardTitle>{item.title}</CardTitle>
-                      <p>By {item.author}</p>
-                      {item.rating == 0 ? (
-                        <p style={{ color: "#333" }}>No Ratings yet</p>
-                      ) : (
-                        <Rating
-                          emptySymbol="fa fa-star fa-2x emptyStar"
-                          fullSymbol="fa fa-star fa-2x fullStar"
-                          fractions={2}
-                          initialRating={item.rating}
-                          readonly
-                        />
-                      )}{" "}
-                    </CardBody>
-                    <CardFooter>
-                      <div
-                        style={{
-                          fontSize: 12,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Clock
-                          color="#888"
-                          size={16}
-                          style={{ marginRight: 4, marginTop: -3 }}
-                        />
-                        {item.pub_date.split("-")[0]}
-                        <span
-                          style={{
-                            marginLeft: 20,
-                          }}
-                        />
-                        <MessageSquare
-                          color="#888"
-                          size={16}
-                          style={{ marginRight: 4 }}
-                        />
-                        {item.bookinfo.reviews.length} reviews
-                      </div>
-                    </CardFooter>
-                  </Card>
-                </NavLink>
-              ))}
+              {this.state.books.map((item, index) => renderBook(item))}
             </Row>
           </InfiniteScroll>
         </Container>
