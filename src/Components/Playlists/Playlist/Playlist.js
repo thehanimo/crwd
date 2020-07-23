@@ -218,6 +218,12 @@ export default function Playlist() {
           </Col>
         </Row>
 
+        <Row style={{ justifyContent: "flex" }}>
+          <a href={"/discussions/playlist/"+id} target="_blank">
+            <Button theme="info">Discuss</Button>
+          </a>
+        </Row>
+
         <Row>
           {content.map((item, index) => (
             <Card

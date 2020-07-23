@@ -21,14 +21,10 @@ import Books from "./Components/Books/Books";
 import Book from "./Components/Books/Book/Book";
 import Courses from "./Components/Courses/Courses";
 import Course from "./Components/Courses/Course/Course";
-<<<<<<< HEAD
-import Discussion from "./Components/Discussions/Discussions"
 import Discussions from "./Components/Discussions/Discussions";
-=======
 import Playlists from "./Components/Playlists/Playlists";
 import Playlist from "./Components/Playlists/Playlist/Playlist";
 import CreatePlaylist from "./Components/Playlists/CreatePlaylist/CreatePlaylist";
->>>>>>> 7a1a9a86ca5de63c118d57ee95b97a57669d1db8
 
 export default class App extends React.Component {
   constructor(props) {
