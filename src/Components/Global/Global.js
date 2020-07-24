@@ -104,7 +104,6 @@ export const renderCourse = (item) => (
         style={{
           position: "absolute",
           width: 300,
-          height: 300,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

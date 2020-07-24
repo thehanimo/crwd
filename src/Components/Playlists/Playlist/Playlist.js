@@ -328,6 +328,7 @@ export default function Playlist() {
                 minLine={1}
                 width={null}
                 url={item.link}
+                defaultMedia={require("../../../images/page.png")}
               />
 
               <br />

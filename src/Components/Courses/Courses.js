@@ -66,10 +66,10 @@ export default class Courses extends React.Component {
       },
     }).then((res) => {
       res.json().then((resJson) => {
-        this.setState({
-          courses: this.state.courses.concat(resJson),
-          nextPage: this.state.nextPage + 1,
-        });
+        this.setState((prevState) => ({
+          courses: prevState.courses.concat(resJson),
+          nextPage: prevState.nextPage + 1,
+        }));
       });
     });
   };
