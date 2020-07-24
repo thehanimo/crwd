@@ -238,6 +238,9 @@ class Discussions extends React.Component {
                   // disabled={isSubmitting}
                   onChange={this.getTextArea}
                   value={this.state.userInput}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") this.submitComment();
+                  }}
                 />
                 <div
                   style={{

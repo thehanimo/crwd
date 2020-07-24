@@ -15,6 +15,7 @@
     "react-feather": "^2.0.4",
     "react-google-login": "^5.1.1",
     "react-infinite-scroll-component": "^5.0.5",
+    "react-items-carousel": "^2.8.0",
     "react-linkedin-login-oauth2": "^1.0.7",
     "react-loaders": "^3.0.1",
     "react-moment": "^0.9.7",

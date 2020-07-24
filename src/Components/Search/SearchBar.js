@@ -52,6 +52,7 @@ export default function SearchBar(props) {
                   if (e.key === "Enter")
                     window.location.replace("/search/" + term);
                 }}
+                onBlur={() => setData([])}
               />
               <div
                 style={{
