@@ -7,3 +7,4 @@ export const coursesAPI = `http://${host}/courses`;
 export const playlistsAPI = `http://${host}/playlists`;
 export const favouritesAPI = `http://${host}/favourites`;
 export const searchAPI = `http://${host}/search`;
+export const recommendationAPI = `http://${host}/recommend`;

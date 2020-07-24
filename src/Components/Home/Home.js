@@ -1,6 +1,6 @@
 import React from "react";
 import Cookie from "js-cookie";
-import { backendAPI } from "../../constants";
+import { backendAPI, recommendationAPI } from "../../constants";
 import {
   Container,
   Row,
@@ -29,6 +29,9 @@ export default class Home extends React.Component {
     super(props);
     this.state = {
       user: {},
+      recommendedCourses : [],
+      recommendedBooks : [],
+      recommendedPlaylists : [],
     };
   }
   componentDidMount = () => {
@@ -46,6 +49,59 @@ export default class Home extends React.Component {
           this.setState({ user: resJson });
         });
     });
+
+
+    // get course reccs
+    fetch(recommendationAPI+"/course", {
+      method: "GET",
+      headers: {
+        Authorization: JWT,
+      },
+    }).then(res => {
+      if (res.status === 4001) {
+        this.setState({error: true});
+      } else {
+        res.json().then(resJson => {
+          this.setState({recommendedCourses: resJson});
+        });
+      }
+    });
+
+    // fetch book recs
+
+    fetch(recommendationAPI+"/book", {
+      method: "GET",
+      headers: {
+        Authorization: JWT,
+      },
+    }).then(res => {
+      if (res.status === 4001) {
+        this.setState({error: true});
+      } else {
+        res.json().then(resJson => {
+          this.setState({recommendedBooks: resJson});
+        });
+      }
+    });
+
+    // fetch playlist recs
+
+    fetch(recommendationAPI+"/playlist", {
+      method: "GET",
+      headers: {
+        Authorization: JWT,
+      },
+    }).then(res => {
+      if (res.status === 4001) {
+        this.setState({error: true});
+      } else {
+        res.json().then(resJson => {
+          console.log(resJson);
+          this.setState({recommendedPlaylists: resJson});
+        });
+      }
+    });
+
   };
   render() {
     const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
@@ -135,6 +191,43 @@ export default class Home extends React.Component {
                 (item, index) => renderPlaylist(item)
               )}
           </Row>
+
+          {/* recommendations */}
+
+          {this.state.recommendedCourses.length > 0 && (
+          <span>
+            <h3 className="bebas" style={{ marginTop: 60, fontSize: 40 }}>
+              Courses you may like!
+            </h3>
+            <Row>
+              { this.state.recommendedCourses.map((item, index) => renderCourse(item) )}
+            </Row>
+          </span>
+          )}
+
+          {this.state.recommendedPlaylists.length > 0 && (
+          <span>
+            <h3 className="bebas" style={{ marginTop: 60, fontSize: 40 }}>
+              Playlists you may like!
+            </h3>
+            <Row>
+              { this.state.recommendedPlaylists.map((item, index) => renderPlaylist(item) )}
+            </Row>
+          </span>
+          )}
+
+          {this.state.recommendedBooks.length > 0 && (
+          <span>
+            <h3 className="bebas" style={{ marginTop: 60, fontSize: 40 }}>
+              Books you may like!
+            </h3>
+            <Row>
+              { this.state.recommendedBooks.map((item, index) => renderBook(item) )}
+            </Row>
+          </span>
+          )}
+
+
         </Container>
       </React.Fragment>
     );
