@@ -52,7 +52,7 @@ export default function Search() {
             </h3>
           </Col>
         </Row>
-        <Row style={{ position: "relative", zIndex: -1 }}>
+        <Row style={{ position: "relative", zIndex: 1 }}>
           {data.map((item) => {
             if (item.type == "book") return renderBook(item);
             else if (item.type == "course") return renderCourse(item);

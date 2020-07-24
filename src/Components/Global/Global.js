@@ -117,7 +117,6 @@ export const renderCourse = (item) => (
         src={item.picture}
         style={{
           width: 300,
-          minHeight: 300,
           backgroundColor: "#FBFBFB",
         }}
       />

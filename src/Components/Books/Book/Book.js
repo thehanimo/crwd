@@ -256,6 +256,20 @@ export default function Book() {
           </Button>
         </Row>
 
+        <Row>
+          <Col>
+            <p
+              style={{
+                fontSize: 16,
+                fontFamily: "Poppins",
+                marginTop: 20,
+              }}
+            >
+              {bookData.description}
+            </p>
+          </Col>
+        </Row>
+
         <br />
 
         <Row>

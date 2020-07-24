@@ -32,7 +32,7 @@ export default function SearchBar(props) {
   }, []);
 
   return (
-    <Container style={{ zIndex: 100 }}>
+    <Container>
       <Row>
         <Col
           style={{
@@ -52,7 +52,11 @@ export default function SearchBar(props) {
                   if (e.key === "Enter")
                     window.location.replace("/search/" + term);
                 }}
-                onBlur={() => setData([])}
+                onBlur={() => {
+                  setTimeout(() => {
+                    setData([]);
+                  }, 100);
+                }}
               />
               <div
                 style={{

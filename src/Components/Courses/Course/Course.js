@@ -254,6 +254,20 @@ export default function Course() {
         </Row>
 
         <Row>
+          <Col>
+            <p
+              style={{
+                fontSize: 16,
+                fontFamily: "Poppins",
+                marginTop: 20,
+              }}
+            >
+              {courseData.description}
+            </p>
+          </Col>
+        </Row>
+
+        <Row>
           <Col
             style={{
               justifyContent: "center",
@@ -279,7 +293,7 @@ export default function Course() {
             </div>
             <img
               src={courseData.picture}
-              style={{ minHeight: 300, width: 300, backgroundColor: "#FBFBFB" }}
+              style={{ width: 300, backgroundColor: "#FBFBFB" }}
             />
           </Col>
         </Row>

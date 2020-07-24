@@ -55,6 +55,7 @@ export default function CreatePlaylist() {
   const [links, setLinks] = useState([
     { id: "1", title: "", description: "", link: "" },
   ]);
+  let count = 1;
   const JWT = Cookie.get("JWT") ? Cookie.get("JWT") : "null";
   const onDragEnd = (result) => {
     // dropped outside the list
@@ -347,7 +348,7 @@ export default function CreatePlaylist() {
               onClick={() =>
                 setLinks(
                   links.concat({
-                    id: "" + (links.length + 1),
+                    id: "" + ++count,
                     title: "",
                     description: "",
                     link: "",
